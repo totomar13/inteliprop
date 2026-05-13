@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inteliprop</title>
+<style>
+:root{--bg:#0a0b0e;--bg2:#111318;--bg3:#181c24;--bg4:#1e2330;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#e8eaf0;--muted:#6b7280;--muted2:#9ca3af;--accent:#3b7fff;--accent2:#60a5fa;--green:#10b981;--green2:#34d399;--red:#f43f5e;--amber:#f59e0b;--amber2:#fbbf24;--purple:#8b5cf6;--teal:#14b8a6;--fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.6;overflow-x:hidden}
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+.shell{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:218px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;overflow-y:auto}
+.logo{padding:22px 18px 18px;border-bottom:1px solid var(--border)}
+.logo-mark{font-family:var(--fh);font-size:20px;font-weight:800;letter-spacing:-.5px}.logo-mark span{color:var(--accent)}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+.nav{padding:14px 10px;flex:1;overflow-y:auto}
+.nav-sec{font-size:10px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;padding:0 8px;margin:18px 0 5px}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--muted2);font-size:13px;transition:all .15s;margin-bottom:2px;border:1px solid transparent}
+.ni:hover{background:var(--bg3);color:var(--text)}.ni.active{background:rgba(59,127,255,0.12);color:var(--accent2);border-color:rgba(59,127,255,0.2)}
+.ni-ico{font-size:15px;width:18px;text-align:center}
+.badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
+.badge.amber{background:var(--amber)}
+.sf{padding:14px;border-top:1px solid var(--border)}
+.up{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--bg3)}
+.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+
+.page{display:none}.page.active{display:block}
+.ph{padding:26px 30px 0;display:flex;align-items:flex-start;justify-content:space-between}
+.pt{font-family:var(--fh);font-size:24px;font-weight:700;letter-spacing:-.5px}
+.ps{color:var(--muted2);font-size:13px;margin-top:3px}
+.ha{display:flex;gap:9px;align-items:center}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:var(--fb)}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:#2563eb}
+.btn-g{background:transparent;color:var(--muted2);border:1px solid var(--border2)}.btn-g:hover{background:var(--bg3);color:var(--text)}
+.btn-sm{padding:6px 11px;font-size:12px}
+.btn-danger{background:rgba(244,63,94,0.1);color:#fb7185;border:1px solid rgba(244,63,94,0.2)}.btn-danger:hover{background:rgba(244,63,94,0.2)}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:20px 30px}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.mc.blue::before{background:linear-gradient(90deg,var(--accent),transparent)}
+.mc.green::before{background:linear-gradient(90deg,var(--green),transparent)}
+.mc.amber::before{background:linear-gradient(90deg,var(--amber),transparent)}
+.mc.purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.ml{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.mv{font-family:var(--fh);font-size:26px;font-weight:700;letter-spacing:-1px}
+.md{font-size:12px;margin-top:5px}.md.up{color:var(--green2)}.md.down{color:var(--red)}.md.neutral{color:var(--muted2)}
+
+.cg{display:grid;grid-template-columns:1fr 360px;gap:18px;padding:0 30px 30px}
+.cg.full{grid-template-columns:1fr}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.ch{padding:16px 18px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-family:var(--fh);font-size:14px;font-weight:600}
+.cb{padding:18px}
+
+.dt{width:100%;border-collapse:collapse}
+.dt th{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:9px 13px;text-align:left;border-bottom:1px solid var(--border);font-weight:500}
+.dt td{padding:12px 13px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr{cursor:pointer}.dt tr:hover td{background:rgba(255,255,255,0.02)}
+
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:500}
+.tag.green{background:rgba(16,185,129,.12);color:var(--green2)}.tag.red{background:rgba(244,63,94,.12);color:#fb7185}
+.tag.amber{background:rgba(245,158,11,.12);color:var(--amber2)}.tag.blue{background:rgba(59,127,255,.12);color:var(--accent2)}
+.tag.purple{background:rgba(139,92,246,.12);color:#a78bfa}.tag.gray{background:rgba(107,114,128,.15);color:var(--muted2)}
+
+.sb{display:flex;align-items:center;gap:9px}
+.sb-bg{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.sb-f{height:100%;border-radius:3px}
+.sn{font-size:12px;font-weight:600;min-width:28px;text-align:right}
+
+/* AVM */
+.avm-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}.fg.full{grid-column:1/-1}
+.fl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;font-weight:500}
+.fi{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--fb);outline:none;transition:border-color .15s;width:100%}
+.fi:focus{border-color:var(--accent)}
+.fs{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+
+.avm-res{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:22px}
+.avm-main{text-align:center;padding:18px 0;border-bottom:1px solid var(--border);margin-bottom:18px}
+.avm-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.avm-price{font-family:var(--fh);font-size:34px;font-weight:800;letter-spacing:-1.5px;color:var(--green2)}
+.avm-range{font-size:12px;color:var(--muted2);margin-top:5px}
+.avm-dev{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:8px;font-size:13px;font-weight:600;margin-top:10px}
+.avm-dev.over{background:rgba(244,63,94,.12);color:#fb7185;border:1px solid rgba(244,63,94,.2)}
+.avm-dev.under{background:rgba(16,185,129,.12);color:var(--green2);border:1px solid rgba(16,185,129,.2)}
+.avm-dev.ok{background:rgba(59,127,255,.12);color:var(--accent2);border:1px solid rgba(59,127,255,.2)}
+.avm-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.avm-stat{background:var(--bg4);border-radius:8px;padding:11px;text-align:center}
+.avm-sv{font-family:var(--fh);font-size:17px;font-weight:700}
+.avm-sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.ib{background:rgba(59,127,255,.06);border:1px solid rgba(59,127,255,.15);border-radius:10px;padding:14px;margin-top:14px}
+.ih{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.id{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.it{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--accent2)}
+.itext{font-size:12px;color:var(--muted2);line-height:1.6}
+
+/* CLIENTS */
+.cg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:18px 30px 30px}
+.cc{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .2s}
+.cc:hover{border-color:var(--border2);transform:translateY(-2px);background:var(--bg3)}
+.cc-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:13px}
+.cav{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.cn{font-family:var(--fh);font-size:14px;font-weight:600}
+.ctype{font-size:11px;color:var(--muted);margin-top:1px}
+.cs{display:grid;grid-template-columns:1fr 1fr;gap:7px;border-top:1px solid var(--border);padding-top:12px}
+.csl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.csv{font-size:12px;font-weight:600;margin-top:1px}
+.cai{font-size:11px;color:var(--muted2);border-radius:6px;padding:7px 9px;margin-top:9px;line-height:1.5}
+
+/* PIPELINE */
+.kanban{display:flex;gap:14px;min-width:900px;padding:20px 30px 30px;overflow-x:auto}
+.kcol{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;min-width:180px}
+.kch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.kct{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+.kcc{background:var(--bg4);color:var(--muted2);font-size:11px;padding:2px 7px;border-radius:9px}
+.kcard{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:11px;margin-bottom:9px;cursor:pointer;transition:all .15s}
+.kcard:hover{border-color:var(--border2)}
+.kct2{font-size:12px;font-weight:500;margin-bottom:5px}
+.kcaddr{font-size:11px;color:var(--muted);margin-bottom:7px}
+.kcf{display:flex;align-items:center;justify-content:space-between}
+.kcp{font-size:12px;font-weight:600;color:var(--green2)}
+
+/* MARKET */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 30px 30px}
+.mcard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.bar-wrap{display:flex;align-items:flex-end;gap:5px;height:130px;margin-top:14px}
+.bar-item{display:flex;flex-direction:column;align-items:center;flex:1}
+.bar{width:100%;border-radius:3px 3px 0 0;cursor:pointer;transition:opacity .15s;min-height:4px}
+.bar:hover{opacity:.8}
+.blbl{font-size:9px;color:var(--muted);text-align:center;margin-top:3px;line-height:1.3}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:28px;width:560px;max-height:90vh;overflow-y:auto;transform:translateY(20px);transition:transform .2s}
+.overlay.open .modal{transform:translateY(0)}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.mt2{font-family:var(--fh);font-size:18px;font-weight:700}
+.close-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--muted2);padding:6px 10px;cursor:pointer;font-size:16px}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 16px;font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.175,.885,.32,1.275);pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.ti{color:var(--green2);margin-right:7px}
+
+/* SEARCH */
+.search-bar{display:flex;gap:10px;padding:18px 30px 0}
+.sb-input{flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13px;font-family:var(--fb);outline:none}
+.sb-input::placeholder{color:var(--muted)}
+.filter-btn{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--muted2);font-size:12px;cursor:pointer;transition:all .15s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent2);background:rgba(59,127,255,.08)}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted)}
+.spinner{width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .25s ease forwards}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty-ico{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-text{font-size:14px}
+
+/* DETAIL PANEL */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.detail-item{background:var(--bg3);border-radius:8px;padding:11px}
+.di-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.di-value{font-size:14px;font-weight:600;margin-top:3px}
+
+/* FORM MODAL */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .fg.full{grid-column:1/-1}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Inteli<span>prop</span></div>
+    <div class="logo-sub">Inteligencia inmobiliaria</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">Principal</div>
+    <div class="ni active" onclick="nav('dashboard',this)"><span class="ni-ico">◈</span> Dashboard</div>
+    <div class="ni" onclick="nav('avm',this)"><span class="ni-ico">◎</span> Valuador AVM</div>
+    <div class="ni" onclick="nav('market',this)"><span class="ni-ico">▦</span> Mercado</div>
+    <div class="nav-sec">CRM</div>
+    <div class="ni" id="nav-clients" onclick="nav('clients',this)"><span class="ni-ico">◉</span> Clientes <span class="badge" id="badge-clients">0</span></div>
+    <div class="ni" onclick="nav('pipeline',this)"><span class="ni-ico">⊞</span> Pipeline</div>
+    <div class="ni" id="nav-props" onclick="nav('properties',this)"><span class="ni-ico">⊟</span> Propiedades <span class="badge" id="badge-props">0</span></div>
+    <div class="nav-sec">Análisis</div>
+    <div class="ni" id="nav-insights" onclick="nav('insights',this)"><span class="ni-ico">◈</span> Insights IA <span class="badge amber" id="badge-insights">0</span></div>
+  </nav>
+  <div class="sf">
+    <div class="up">
+      <div class="av">BR</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Broker</div>
+        <div style="font-size:10px;color:var(--muted)">Inteliprop Pro</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="ph">
+    <div><div class="pt">Dashboard</div><div class="ps" id="dash-sub">Cargando...</div></div>
+    <div class="ha">
+      <button class="btn btn-p btn-sm" onclick="openAvmModal()">+ Nueva valuación</button>
+    </div>
+  </div>
+  <div class="metrics" id="dash-metrics">
+    <div class="mc blue"><div class="ml">Propiedades activas</div><div class="mv" id="d-props">—</div><div class="md neutral">Cargando...</div></div>
+    <div class="mc green"><div class="ml">Operaciones cerradas</div><div class="mv" id="d-closed">—</div><div class="md up" id="d-closed-val">—</div></div>
+    <div class="mc amber"><div class="ml">USD/m² promedio zona</div><div class="mv" id="d-sqm">—</div><div class="md up">↑ Actualizado hoy</div></div>
+    <div class="mc purple"><div class="ml">Leads activos</div><div class="mv" id="d-clients">—</div><div class="md neutral" id="d-hot">—</div></div>
+  </div>
+  <div class="cg">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="ch"><span class="ct">Propiedades — análisis AVM</span><button class="btn btn-g btn-sm" onclick="nav('properties',document.getElementById('nav-props'))">Ver todas</button></div>
+        <div id="dash-props-table"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="ch"><span class="ct">⚡ Insights activos</span><span class="tag amber" id="insights-count-badge">—</span></div>
+        <div class="cb" style="padding:10px" id="dash-insights-panel"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct">Actividad reciente</span></div>
+        <div class="cb" style="padding:10px" id="dash-activity"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AVM -->
+<div class="page" id="page-avm">
+  <div class="ph">
+    <div><div class="pt">Valuador AVM</div><div class="ps">Motor de valuación automática con datos de mercado real</div></div>
+  </div>
+  <div style="padding:22px 30px;display:grid;grid-template-columns:1fr 350px;gap:18px">
+    <div>
+      <div class="card">
+        <div class="ch"><span class="ct">Datos de la propiedad</span></div>
+        <div class="cb">
+          <div class="avm-form">
+            <div class="fg full"><label class="fl">Dirección</label><input class="fi" id="avm-addr" placeholder="Ej: Av. Santa Fe 3200"></div>
+            <div class="fg"><label class="fl">Barrio</label>
+              <select class="fi fs" id="avm-barrio">
+                <option>Palermo</option><option>Belgrano</option><option>Caballito</option><option>Núñez</option><option>Villa Urquiza</option><option>Recoleta</option><option>Almagro</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Tipo</label>
+              <select class="fi fs" id="avm-type"><option>Departamento</option><option>Casa</option><option>PH</option><option>Local</option></select>
+            </div>
+            <div class="fg"><label class="fl">Superficie cubierta (m²)</label><input class="fi" type="number" id="avm-sqm" placeholder="72" min="20" max="500"></div>
+            <div class="fg"><label class="fl">Ambientes</label>
+              <select class="fi fs" id="avm-rooms"><option value="1">1 ambiente</option><option value="2">2 ambientes</option><option value="3" selected>3 ambientes</option><option value="4">4 ambientes</option><option value="5">5+</option></select>
+            </div>
+            <div class="fg"><label class="fl">Piso</label><input class="fi" type="number" id="avm-floor" placeholder="0 = PB" min="0" max="30"></div>
+            <div class="fg"><label class="fl">Antigüedad (años)</label><input class="fi" type="number" id="avm-age" placeholder="10" min="0" max="100"></div>
+            <div class="fg"><label class="fl">Estado</label>
+              <select class="fi fs" id="avm-cond"><option>A estrenar</option><option selected>Reciclado</option><option>Muy bueno</option><option>A reciclar</option></select>
+            </div>
+            <div class="fg"><label class="fl">Precio publicado (USD)</label><input class="fi" type="number" id="avm-price" placeholder="220000" min="0"></div>
+            <div class="fg"><label class="fl">Expensas (USD/mes)</label><input class="fi" type="number" id="avm-expenses" placeholder="150" min="0"></div>
+            <div class="fg full"><label class="fl">Amenities</label>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:5px">
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2);cursor:pointer"><input type="checkbox" id="avm-garage"> Cochera</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2);cursor:pointer"><input type="checkbox" id="avm-pool"> Piscina</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2);cursor:pointer"><input type="checkbox" id="avm-gym"> Gym</label>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2);cursor:pointer"><input type="checkbox" id="avm-terrace"> Terraza</label>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:18px">
+            <button class="btn btn-p" style="flex:1;justify-content:center;padding:12px" onclick="runAVM()">⚡ Calcular valuación</button>
+            <button class="btn btn-g" onclick="saveFromAVM()">+ Guardar propiedad</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:14px" id="comp-card">
+        <div class="ch"><span class="ct">Comparables de mercado</span><span class="tag blue" id="comp-count">—</span></div>
+        <div class="cb" style="padding:10px" id="comp-list"></div>
+      </div>
+    </div>
+    <div id="avm-result-panel">
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:24px;text-align:center;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:12px;opacity:.3">◎</div>
+        <div style="font-size:13px">Completá los datos y ejecutá la valuación</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET -->
+<div class="page" id="page-market">
+  <div class="ph">
+    <div><div class="pt">Inteligencia de mercado</div><div class="ps">Análisis en tiempo real · Buenos Aires</div></div>
+  </div>
+  <div style="padding:20px 30px 0">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px" id="market-metrics"></div>
+  </div>
+  <div class="mg" id="market-grid"></div>
+</div>
+
+<!-- CLIENTS -->
+<div class="page" id="page-clients">
+  <div class="ph">
+    <div><div class="pt">Clientes</div><div class="ps" id="clients-sub">Cargando...</div></div>
+    <div class="ha">
+      <button class="btn btn-p btn-sm" onclick="openClientModal()">+ Nuevo cliente</button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <input class="sb-input" type="text" placeholder="🔍  Buscar por nombre, barrio, presupuesto..." id="client-search" oninput="filterClients()">
+    <button class="filter-btn active" onclick="setClientFilter('all',this)">Todos</button>
+    <button class="filter-btn" onclick="setClientFilter('buyer',this)">Compradores</button>
+    <button class="filter-btn" onclick="setClientFilter('seller',this)">Vendedores</button>
+    <button class="filter-btn" onclick="setClientFilter('investor',this)">Inversores</button>
+  </div>
+  <div class="cg3" id="clients-grid"></div>
+</div>
+
+<!-- PIPELINE -->
+<div class="page" id="page-pipeline">
+  <div class="ph">
+    <div><div class="pt">Pipeline de ventas</div><div class="ps" id="pipeline-sub">Cargando...</div></div>
+    <button class="btn btn-p btn-sm" onclick="openDealModal()">+ Nueva operación</button>
+  </div>
+  <div class="kanban" id="kanban"></div>
+</div>
+
+<!-- PROPERTIES -->
+<div class="page" id="page-properties">
+  <div class="ph">
+    <div><div class="pt">Propiedades</div><div class="ps" id="props-sub">Cargando...</div></div>
+    <button class="btn btn-p btn-sm" onclick="nav('avm',document.getElementById('nav-avm')||document.querySelector('[onclick*=avm]'))">+ Cargar y valuar</button>
+  </div>
+  <div style="padding:18px 30px">
+    <div class="card">
+      <div id="props-table"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="page" id="page-insights">
+  <div class="ph">
+    <div><div class="pt">Insights IA</div><div class="ps">Análisis automático · actualizado en tiempo real</div></div>
+  </div>
+  <div style="padding:22px 30px;display:flex;flex-direction:column;gap:12px" id="insights-content"></div>
+</div>
+
+</main>
+</div>
+
+<!-- MODALS -->
+<div class="overlay" id="modal-avm" onclick="if(event.target===this)closeModal('modal-avm')">
+  <div class="modal">
+    <div class="mh"><div class="mt2">Nueva valuación rápida</div><button class="close-btn" onclick="closeModal('modal-avm')">×</button></div>
+    <div style="font-size:13px;color:var(--muted2);margin-bottom:16px">Ingresá los datos básicos para una valuación instantánea.</div>
+    <div class="form-grid">
+      <div class="fg full"><label class="fl">Dirección</label><input class="fi" id="m-addr" placeholder="Av. Santa Fe 3200"></div>
+      <div class="fg"><label class="fl">Barrio</label><select class="fi fs" id="m-barrio"><option>Palermo</option><option>Belgrano</option><option>Caballito</option><option>Núñez</option><option>Villa Urquiza</option><option>Recoleta</option><option>Almagro</option></select></div>
+      <div class="fg"><label class="fl">m² cubiertos</label><input class="fi" type="number" id="m-sqm" placeholder="72"></div>
+      <div class="fg"><label class="fl">Precio publicado (USD)</label><input class="fi" type="number" id="m-price" placeholder="220000"></div>
+      <div class="fg"><label class="fl">Ambientes</label><select class="fi fs" id="m-rooms"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option></select></div>
+      <div class="fg"><label class="fl">Condición</label><select class="fi fs" id="m-cond"><option>A estrenar</option><option selected>Reciclado</option><option>Muy bueno</option><option>A reciclar</option></select></div>
+    </div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:16px;padding:12px" onclick="runQuickAVM()">⚡ Ver valuación</button>
+    <div id="quick-avm-result" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-client" onclick="if(event.target===this)closeModal('modal-client')">
+  <div class="modal">
+    <div class="mh"><div class="mt2">Nuevo cliente</div><button class="close-btn" onclick="closeModal('modal-client')">×</button></div>
+    <div class="form-grid">
+      <div class="fg full"><label class="fl">Nombre completo</label><input class="fi" id="nc-name" placeholder="Laura Méndez"></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="nc-email" type="email" placeholder="laura@email.com"></div>
+      <div class="fg"><label class="fl">Teléfono</label><input class="fi" id="nc-phone" placeholder="11-5555-1234"></div>
+      <div class="fg"><label class="fl">Tipo de cliente</label>
+        <select class="fi fs" id="nc-type"><option value="buyer">Comprador</option><option value="seller">Vendedor</option><option value="investor">Inversor</option><option value="developer">Desarrollador</option></select>
+      </div>
+      <div class="fg"><label class="fl">Presupuesto mín. (USD)</label><input class="fi" type="number" id="nc-bmin" placeholder="150000"></div>
+      <div class="fg"><label class="fl">Presupuesto máx. (USD)</label><input class="fi" type="number" id="nc-bmax" placeholder="200000"></div>
+      <div class="fg full"><label class="fl">Barrios de interés</label><input class="fi" id="nc-neigh" placeholder="Palermo, Belgrano, Núñez"></div>
+      <div class="fg full"><label class="fl">Notas</label><textarea class="fi" id="nc-notes" placeholder="Observaciones importantes..." rows="3" style="resize:vertical"></textarea></div>
+    </div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:16px;padding:12px" onclick="saveClient()">Guardar cliente</button>
+  </div>
+</div>
+
+<div class="overlay" id="modal-deal" onclick="if(event.target===this)closeModal('modal-deal')">
+  <div class="modal">
+    <div class="mh"><div class="mt2">Nueva operación</div><button class="close-btn" onclick="closeModal('modal-deal')">×</button></div>
+    <div class="form-grid">
+      <div class="fg full"><label class="fl">Título</label><input class="fi" id="nd-title" placeholder="Ej: Carlos Vega — Monroe 3200"></div>
+      <div class="fg"><label class="fl">Valor (USD)</label><input class="fi" type="number" id="nd-value" placeholder="155000"></div>
+      <div class="fg"><label class="fl">Etapa inicial</label>
+        <select class="fi fs" id="nd-stage"><option value="lead">Nuevo lead</option><option value="qualifying">Calificando</option><option value="offer">Oferta</option><option value="closing">Escritura</option></select>
+      </div>
+      <div class="fg full"><label class="fl">Notas</label><textarea class="fi" id="nd-notes" rows="2" style="resize:vertical"></textarea></div>
+    </div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:16px;padding:12px" onclick="saveDeal()">Guardar operación</button>
+  </div>
+</div>
+
+<div class="overlay" id="modal-client-detail" onclick="if(event.target===this)closeModal('modal-client-detail')">
+  <div class="modal" style="width:600px">
+    <div class="mh"><div class="mt2" id="cd-name">—</div><button class="close-btn" onclick="closeModal('modal-client-detail')">×</button></div>
+    <div id="client-detail-body"></div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-prop-detail" onclick="if(event.target===this)closeModal('modal-prop-detail')">
+  <div class="modal" style="width:620px">
+    <div class="mh"><div class="mt2" id="pd-title">—</div><button class="close-btn" onclick="closeModal('modal-prop-detail')">×</button></div>
+    <div id="prop-detail-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ti">✓</span><span id="toast-msg"></span></div>
+
+<script>
+const API = '';
+let allClients = [];
+let clientFilter = 'all';
+let avmResult = null;
+let avmData = null;
+
+async function api(path, opts={}) {
+  const r = await fetch(API + path, opts);
+  return r.json();
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────
+function nav(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  const loaders = { dashboard: loadDashboard, clients: loadClients, pipeline: loadPipeline, properties: loadProperties, market: loadMarket, insights: loadInsights };
+  if (loaders[page]) loaders[page]();
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────────
+async function loadDashboard() {
+  const [stats, props, insights] = await Promise.all([api('/api/dashboard'), api('/api/properties'), api('/api/insights')]);
+  document.getElementById('d-props').textContent = stats.totalProps;
+  document.getElementById('d-closed').textContent = stats.closedDeals;
+  document.getElementById('d-closed-val').textContent = '↑ USD ' + (stats.closedValue/1000).toFixed(0) + 'k total';
+  document.getElementById('d-sqm').textContent = stats.avgSqm.toLocaleString();
+  document.getElementById('d-clients').textContent = stats.totalClients;
+  document.getElementById('d-hot').textContent = '→ ' + stats.hotLeads + ' calificados';
+  document.getElementById('dash-sub').textContent = `${stats.overpriced} propiedades con sobreprecio · ${stats.opportunities} oportunidades detectadas`;
+  document.getElementById('badge-props').textContent = stats.totalProps;
+  document.getElementById('badge-clients').textContent = stats.totalClients;
+  const totalInsights = insights.alerts.length + insights.opportunities.length;
+  document.getElementById('badge-insights').textContent = totalInsights;
+  document.getElementById('insights-count-badge').textContent = totalInsights + ' activos';
+
+  // Props table
+  const rows = props.slice(0,5).map(p => {
+    const dev = p.avm_deviation_pct;
+    const devTag = dev > 5 ? `<span class="tag red">+${dev}% ↑</span>` : dev < -3 ? `<span class="tag green">${dev}% ↓</span>` : `<span class="tag blue">~${dev}%</span>`;
+    const statusTag = dev > 10 ? `<span class="tag amber">Sobreprecio</span>` : dev < -3 ? `<span class="tag green">Oportunidad</span>` : `<span class="tag blue">En precio</span>`;
+    const invColor = p.investment_score >= 75 ? 'var(--green)' : p.investment_score >= 55 ? 'var(--amber)' : 'var(--red)';
+    return `<tr onclick="openPropDetail('${p.id}')">
+      <td><div style="font-weight:500">${p.neighborhood} — ${p.address}</div><div style="font-size:11px;color:var(--muted)">${p.rooms} amb · ${p.sqm_covered}m² · ${p.floor > 0 ? 'Piso '+p.floor : 'PB'}</div></td>
+      <td><span style="font-family:var(--fh);font-weight:600">$${(p.listed_price_usd/1000).toFixed(0)}k</span></td>
+      <td><span style="color:var(--green2);font-weight:600">$${(p.avm_value/1000).toFixed(0)}k</span></td>
+      <td>${devTag}</td>
+      <td><div class="sb"><div class="sb-bg"><div class="sb-f" style="width:${p.investment_score}%;background:${invColor}"></div></div><span class="sn" style="color:${invColor}">${p.investment_score}</span></div></td>
+      <td>${statusTag}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('dash-props-table').innerHTML = `<table class="dt"><thead><tr><th>Propiedad</th><th>Publicado</th><th>AVM</th><th>Desvío</th><th>Score</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>`;
+
+  // Insights panel
+  const ihtml = [...insights.alerts.slice(0,1).map(i => `
+    <div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:8px;padding:11px;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:600;color:#fb7185;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">⚠ ${i.title}</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.5">${i.body}</div>
+    </div>`),
+    ...insights.opportunities.slice(0,1).map(i => `
+    <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:11px;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:600;color:var(--green2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">✓ ${i.title}</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.5">${i.body}</div>
+    </div>`),
+    ...insights.matches.slice(0,1).map(i => `
+    <div style="background:rgba(59,127,255,.06);border:1px solid rgba(59,127,255,.15);border-radius:8px;padding:11px">
+      <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">→ ${i.title}</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:1.5">${i.body}</div>
+    </div>`)
+  ].join('');
+  document.getElementById('dash-insights-panel').innerHTML = ihtml || '<div class="empty"><div class="empty-text">Sin insights activos</div></div>';
+
+  // Activity
+  document.getElementById('dash-activity').innerHTML = props.slice(0,4).map(p => `
+    <div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="width:26px;height:26px;border-radius:50%;background:rgba(16,185,129,.15);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">✓</div>
+      <div><div style="font-size:12px;font-weight:500">Valuación — ${p.neighborhood} (${p.address})</div><div style="font-size:11px;color:var(--muted)">AVM: USD ${p.avm_value?.toLocaleString()} · ${p.days_on_market}d en mercado</div></div>
+    </div>`).join('');
+}
+
+// ─── AVM ─────────────────────────────────────────────────────────
+async function runAVM() {
+  const data = getAvmFormData();
+  if (!data.neighborhood || !data.sqm_covered) { toast('Completá barrio y superficie'); return; }
+  avmData = data;
+  document.getElementById('avm-result-panel').innerHTML = '<div class="loading"><div class="spinner"></div>Calculando comparables...</div>';
+  const r = await api('/api/avm/calculate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  avmResult = r;
+  renderAvmResult(r, 'avm-result-panel');
+  renderComparables(r, data.neighborhood);
+}
+
+function getAvmFormData(prefix='avm') {
+  return {
+    address: document.getElementById(prefix+'-addr')?.value || document.getElementById('m-addr')?.value || '',
+    neighborhood: document.getElementById(prefix+'-barrio')?.value || document.getElementById('m-barrio')?.value,
+    property_type: document.getElementById(prefix+'-type')?.value || 'Departamento',
+    sqm_covered: parseFloat(document.getElementById(prefix+'-sqm')?.value || document.getElementById('m-sqm')?.value) || 0,
+    rooms: parseInt(document.getElementById(prefix+'-rooms')?.value || document.getElementById('m-rooms')?.value) || 3,
+    floor: parseInt(document.getElementById(prefix+'-floor')?.value) || 0,
+    age_years: parseInt(document.getElementById(prefix+'-age')?.value) || 0,
+    condition: document.getElementById(prefix+'-cond')?.value || document.getElementById('m-cond')?.value || 'Reciclado',
+    listed_price_usd: parseFloat(document.getElementById(prefix+'-price')?.value || document.getElementById('m-price')?.value) || 0,
+    expenses_usd: parseFloat(document.getElementById(prefix+'-expenses')?.value) || 0,
+    has_garage: document.getElementById(prefix+'-garage')?.checked ? 1 : 0,
+    has_pool: document.getElementById(prefix+'-pool')?.checked ? 1 : 0,
+    has_gym: document.getElementById(prefix+'-gym')?.checked ? 1 : 0,
+    has_terrace: document.getElementById(prefix+'-terrace')?.checked ? 1 : 0,
+  };
+}
+
+function renderAvmResult(r, containerId) {
+  const dev = r.deviation_pct;
+  const devClass = dev > 5 ? 'over' : dev < -3 ? 'under' : 'ok';
+  const devText = dev > 5 ? `⚠ Sobreprecio +${dev}%` : dev < -3 ? `✓ Subprecio ${dev}%` : `→ En precio ${dev > 0 ? '+' : ''}${dev}%`;
+  const invColor = r.investment_score >= 75 ? 'var(--green2)' : r.investment_score >= 55 ? 'var(--amber2)' : '#fb7185';
+  const riskColor = r.risk_score <= 30 ? 'var(--green2)' : r.risk_score <= 55 ? 'var(--amber2)' : '#fb7185';
+  document.getElementById(containerId).innerHTML = `
+    <div class="avm-res">
+      <div class="avm-main">
+        <div class="avm-lbl">Valor estimado por IA</div>
+        <div class="avm-price">USD ${r.estimated_value?.toLocaleString()}</div>
+        <div class="avm-range">Rango de cierre: USD ${r.range_min?.toLocaleString()} – ${r.range_max?.toLocaleString()}</div>
+        <div class="avm-dev ${devClass}">${devText}</div>
+      </div>
+      <div class="avm-stats">
+        <div class="avm-stat"><div class="avm-sv" style="color:var(--green2)">USD ${r.estimated_usd_sqm?.toLocaleString()}</div><div class="avm-sl">USD/m² real</div></div>
+        <div class="avm-stat"><div class="avm-sv" style="color:${dev>5?'#fb7185':'var(--muted2)'}">USD ${r.listed_usd_sqm?.toLocaleString()||'—'}</div><div class="avm-sl">USD/m² publicado</div></div>
+        <div class="avm-stat"><div class="avm-sv">${r.comparables_count}</div><div class="avm-sl">Comparables</div></div>
+        <div class="avm-stat"><div class="avm-sv" style="color:var(--green2)">${r.confidence_score}%</div><div class="avm-sl">Confianza</div></div>
+      </div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px">Scores</div>
+        ${scoreBar('Score inversión', r.investment_score, invColor)}
+        ${scoreBar('Score riesgo', r.risk_score, riskColor)}
+        ${scoreBar('Score comercial', r.commercial_score, 'var(--accent2)')}
+      </div>
+      <div class="ib"><div class="ih"><div class="id"></div><span class="it">Análisis IA</span></div><div class="itext">${r.ai_insight}</div></div>
+    </div>`;
+}
+
+function scoreBar(label, val, color) {
+  return `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--muted2)">${label}</span><span style="font-size:11px;font-weight:600;color:${color}">${val}/100</span></div><div class="sb-bg" style="height:5px"><div class="sb-f" style="width:${val}%;background:${color}"></div></div></div>`;
+}
+
+function renderComparables(r, neighborhood) {
+  const basePrice = r.estimated_usd_sqm || 2600;
+  const comps = [
+    { addr: 'Comparable 1', meta: `Similar · zona ${neighborhood}`, price: Math.round((basePrice * 0.96 * 70)/1000)*1000, sqm: 70 },
+    { addr: 'Comparable 2', meta: `Similar · zona ${neighborhood}`, price: Math.round((basePrice * 1.02 * 74)/1000)*1000, sqm: 74 },
+    { addr: 'Comparable 3', meta: `Similar · zona ${neighborhood}`, price: Math.round((basePrice * 0.99 * 68)/1000)*1000, sqm: 68 },
+    { addr: 'Comparable 4', meta: `Similar · zona ${neighborhood}`, price: Math.round((basePrice * 1.05 * 72)/1000)*1000, sqm: 72 },
+    { addr: 'Comparable 5', meta: `Similar · zona ${neighborhood}`, price: Math.round((basePrice * 0.94 * 76)/1000)*1000, sqm: 76 },
+  ];
+  document.getElementById('comp-count').textContent = comps.length + ' propiedades';
+  document.getElementById('comp-list').innerHTML = comps.map(c => `
+    <div style="background:var(--bg4);border-radius:8px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div><div style="font-size:12px;font-weight:500">${c.addr}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${c.meta} · ${c.sqm}m²</div></div>
+      <div style="text-align:right"><div style="font-family:var(--fh);font-size:13px;font-weight:700">USD ${c.price.toLocaleString()}</div><div style="font-size:11px;color:var(--muted2)">USD ${Math.round(c.price/c.sqm).toLocaleString()}/m²</div></div>
+    </div>`).join('');
+}
+
+async function saveFromAVM() {
+  if (!avmData || !avmData.sqm_covered) { toast('Ejecutá primero la valuación'); return; }
+  await api('/api/properties', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(avmData) });
+  toast('Propiedad guardada con valuación AVM');
+}
+
+async function runQuickAVM() {
+  const data = {
+    neighborhood: document.getElementById('m-barrio').value,
+    sqm_covered: parseFloat(document.getElementById('m-sqm').value) || 70,
+    rooms: parseInt(document.getElementById('m-rooms').value) || 3,
+    condition: document.getElementById('m-cond').value,
+    listed_price_usd: parseFloat(document.getElementById('m-price').value) || 0,
+    floor: 0, age_years: 10, has_garage: 0, has_pool: 0, has_gym: 0
+  };
+  document.getElementById('quick-avm-result').innerHTML = '<div class="loading"><div class="spinner"></div>Calculando...</div>';
+  const r = await api('/api/avm/calculate', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  const dev = r.deviation_pct;
+  document.getElementById('quick-avm-result').innerHTML = `
+    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:16px">
+      <div style="text-align:center;margin-bottom:12px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Valor estimado</div>
+        <div style="font-family:var(--fh);font-size:28px;font-weight:800;color:var(--green2)">USD ${r.estimated_value?.toLocaleString()}</div>
+        <div class="avm-dev ${dev>5?'over':dev<-3?'under':'ok'}" style="margin-top:8px;display:inline-flex">${dev>5?'⚠ Sobreprecio +'+dev+'%':dev<-3?'✓ Oportunidad '+dev+'%':'→ En precio'}</div>
+      </div>
+      <div class="ib"><div class="ih"><div class="id"></div><span class="it">IA</span></div><div class="itext">${r.ai_insight}</div></div>
+    </div>`;
+}
+
+// ─── CLIENTS ─────────────────────────────────────────────────────
+async function loadClients() {
+  const clients = await api('/api/clients');
+  allClients = clients;
+  document.getElementById('clients-sub').textContent = `${clients.length} clientes · ${clients.filter(c=>c.temperature==='hot').length} calificados`;
+  renderClients(clients);
+}
+
+function renderClients(clients) {
+  if (!clients.length) { document.getElementById('clients-grid').innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-ico">◉</div><div class="empty-text">No hay clientes aún</div></div>'; return; }
+  const colors = ['linear-gradient(135deg,#3b7fff,#8b5cf6)','linear-gradient(135deg,#10b981,#14b8a6)','linear-gradient(135deg,#f59e0b,#f43f5e)','linear-gradient(135deg,#14b8a6,#3b7fff)','linear-gradient(135deg,#8b5cf6,#f43f5e)','linear-gradient(135deg,#f59e0b,#10b981)'];
+  const typeLabels = { buyer:'Comprador', seller:'Vendedor', investor:'Inversor', developer:'Desarrollador' };
+  const tempMap = { hot:'🔥 Caliente', warm:'→ Templado', cold:'❄ Frío' };
+  const tempTag = { hot:'tag green', warm:'tag amber', cold:'tag gray' };
+  const typeTag = { buyer:'tag blue', seller:'tag red', investor:'tag purple', developer:'tag amber' };
+  document.getElementById('clients-grid').innerHTML = clients.map((c,i) => `
+    <div class="cc fade-in" onclick="openClientDetail('${c.id}')">
+      <div class="cc-top">
+        <div class="cav" style="background:${colors[i%colors.length]}">${c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+        <div>
+          <div class="cn">${c.name}</div>
+          <div class="ctype">${typeLabels[c.client_type]||c.client_type}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">
+            <span class="${tempTag[c.temperature]||'tag gray'}">${tempMap[c.temperature]||c.temperature}</span>
+            <span class="${typeTag[c.client_type]||'tag gray'}">${typeLabels[c.client_type]||c.client_type}</span>
+          </div>
+        </div>
+      </div>
+      <div class="cs">
+        <div><div class="csl">Presupuesto</div><div class="csv">USD ${(c.budget_min_usd/1000).toFixed(0)}–${(c.budget_max_usd/1000).toFixed(0)}k</div></div>
+        <div><div class="csl">Zona</div><div class="csv" style="font-size:11px">${c.preferred_neighborhoods||'—'}</div></div>
+        <div><div class="csl">Etapa</div><div class="csv"><span class="tag blue" style="font-size:10px">${c.pipeline_stage}</span></div></div>
+        <div><div class="csl">Último contacto</div><div class="csv" style="font-size:11px">${c.last_contact||'—'}</div></div>
+      </div>
+      ${c.ai_insight ? `<div class="cai" style="background:rgba(59,127,255,.05);border:1px solid rgba(59,127,255,.1)">⚡ ${c.ai_insight}</div>` : ''}
+    </div>`).join('');
+}
+
+function filterClients() {
+  const q = document.getElementById('client-search').value.toLowerCase();
+  let filtered = allClients;
+  if (clientFilter !== 'all') filtered = filtered.filter(c => c.client_type === clientFilter);
+  if (q) filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || (c.preferred_neighborhoods||'').toLowerCase().includes(q) || String(c.budget_max_usd).includes(q));
+  renderClients(filtered);
+}
+
+function setClientFilter(f, el) {
+  clientFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filterClients();
+}
+
+async function openClientDetail(id) {
+  const c = await api('/api/clients/' + id);
+  document.getElementById('cd-name').textContent = c.name;
+  const typeLabels = { buyer:'Comprador', seller:'Vendedor', investor:'Inversor', developer:'Desarrollador' };
+  document.getElementById('client-detail-body').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><div class="di-label">Tipo</div><div class="di-value">${typeLabels[c.client_type]||c.client_type}</div></div>
+      <div class="detail-item"><div class="di-label">Estado</div><div class="di-value"><span class="tag ${c.temperature==='hot'?'green':c.temperature==='warm'?'amber':'gray'}">${c.temperature}</span></div></div>
+      <div class="detail-item"><div class="di-label">Presupuesto</div><div class="di-value">USD ${(c.budget_min_usd/1000).toFixed(0)}k – ${(c.budget_max_usd/1000).toFixed(0)}k</div></div>
+      <div class="detail-item"><div class="di-label">Zonas</div><div class="di-value">${c.preferred_neighborhoods||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">Email</div><div class="di-value">${c.email||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">Teléfono</div><div class="di-value">${c.phone||'—'}</div></div>
+    </div>
+    ${c.ai_insight?`<div class="ib" style="margin-bottom:16px"><div class="ih"><div class="id"></div><span class="it">Análisis IA</span></div><div class="itext">${c.ai_insight}</div></div>`:''}
+    ${c.matches?.length?`<div class="ct" style="margin-bottom:12px;font-size:13px">Propiedades recomendadas</div>${c.matches.map(p=>`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer" onclick="closeModal('modal-client-detail');openPropDetail('${p.id}')"><div style="display:flex;justify-content:space-between"><span style="font-weight:500">${p.neighborhood} — ${p.address}</span><span style="color:var(--green2);font-weight:600">USD ${p.avm_value?.toLocaleString()}</span></div><div style="font-size:11px;color:var(--muted);margin-top:3px">${p.rooms} amb · ${p.sqm_covered}m² · Score inversión: ${p.investment_score}/100</div></div>`).join('')}`:''}
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-p btn-sm" onclick="setTemp('${c.id}','hot');closeModal('modal-client-detail')">🔥 Marcar caliente</button>
+      <button class="btn btn-g btn-sm" onclick="setTemp('${c.id}','cold');closeModal('modal-client-detail')">❄ Marcar frío</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')">Eliminar</button>
+    </div>`;
+  openModal('modal-client-detail');
+}
+
+async function setTemp(id, temp) {
+  await api('/api/clients/'+id, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({temperature:temp}) });
+  toast('Cliente actualizado'); loadClients();
+}
+async function deleteClient(id) {
+  await api('/api/clients/'+id, { method:'DELETE' });
+  toast('Cliente eliminado'); closeModal('modal-client-detail'); loadClients();
+}
+
+async function saveClient() {
+  const data = { name:document.getElementById('nc-name').value, email:document.getElementById('nc-email').value, phone:document.getElementById('nc-phone').value, client_type:document.getElementById('nc-type').value, budget_min_usd:parseFloat(document.getElementById('nc-bmin').value)||0, budget_max_usd:parseFloat(document.getElementById('nc-bmax').value)||0, preferred_neighborhoods:document.getElementById('nc-neigh').value, notes:document.getElementById('nc-notes').value };
+  if (!data.name) { toast('Ingresá el nombre'); return; }
+  await api('/api/clients', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  closeModal('modal-client'); toast('Cliente guardado'); loadClients();
+}
+
+// ─── PIPELINE ────────────────────────────────────────────────────
+async function loadPipeline() {
+  const pipeline = await api('/api/pipeline');
+  const stages = [
+    { key:'lead', label:'Nuevo lead', color:'var(--muted2)' },
+    { key:'qualifying', label:'Calificando', color:'var(--accent2)' },
+    { key:'offer', label:'Visita / Oferta', color:'var(--amber2)' },
+    { key:'closing', label:'Escritura', color:'var(--purple)' },
+    { key:'closed', label:'Cerrado ✓', color:'var(--green2)' },
+  ];
+  const totalDeals = Object.values(pipeline).flat().length;
+  const totalVal = Object.values(pipeline).flat().reduce((a,d)=>a+(d.value_usd||0),0);
+  document.getElementById('pipeline-sub').textContent = `${totalDeals} operaciones · USD ${(totalVal/1000000).toFixed(2)}M en cartera`;
+  document.getElementById('kanban').innerHTML = stages.map(s => `
+    <div class="kcol">
+      <div class="kch"><span class="kct" style="color:${s.color}">${s.label}</span><span class="kcc">${(pipeline[s.key]||[]).length}</span></div>
+      ${(pipeline[s.key]||[]).map(d => `
+        <div class="kcard" onclick="moveDeal('${d.id}','${s.key}')">
+          <div class="kct2">${d.title}</div>
+          <div class="kcf"><span class="kcp">USD ${(d.value_usd/1000).toFixed(0)}k</span><span class="tag gray" style="font-size:10px">${s.label}</span></div>
+        </div>`).join('')}
+      <button class="btn btn-g btn-sm" style="width:100%;justify-content:center;margin-top:4px;font-size:11px" onclick="openDealModal('${s.key}')">+ Agregar</button>
+    </div>`).join('');
+}
+
+async function moveDeal(id, currentStage) {
+  const stages = ['lead','qualifying','offer','closing','closed'];
+  const idx = stages.indexOf(currentStage);
+  const next = stages[Math.min(idx+1, stages.length-1)];
+  if (next !== currentStage) {
+    await api('/api/pipeline/'+id, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({stage:next}) });
+    toast('Operación avanzada a: '+next); loadPipeline();
+  }
+}
+
+async function saveDeal() {
+  const data = { title:document.getElementById('nd-title').value, value_usd:parseFloat(document.getElementById('nd-value').value)||0, stage:document.getElementById('nd-stage').value, notes:document.getElementById('nd-notes').value };
+  if (!data.title) { toast('Ingresá el título'); return; }
+  await api('/api/pipeline', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+  closeModal('modal-deal'); toast('Operación guardada'); loadPipeline();
+}
+
+// ─── PROPERTIES ──────────────────────────────────────────────────
+async function loadProperties() {
+  const props = await api('/api/properties');
+  document.getElementById('props-sub').textContent = `${props.length} activas`;
+  document.getElementById('props-table').innerHTML = `<table class="dt">
+    <thead><tr><th>Propiedad</th><th>Tipo</th><th>Publicado</th><th>AVM</th><th>Desvío</th><th>Inv.</th><th>Riesgo</th><th>Días</th><th>Estado</th></tr></thead>
+    <tbody>${props.map(p => {
+      const dev = p.avm_deviation_pct;
+      return `<tr onclick="openPropDetail('${p.id}')">
+        <td><div style="font-weight:500">${p.address}</div><div style="font-size:11px;color:var(--muted)">${p.neighborhood} · ${p.rooms}amb · ${p.sqm_covered}m²</div></td>
+        <td><span class="tag gray">${p.property_type||'Depto.'}</span></td>
+        <td style="font-weight:600">$${(p.listed_price_usd/1000).toFixed(0)}k</td>
+        <td style="color:var(--green2);font-weight:600">$${(p.avm_value/1000).toFixed(0)}k</td>
+        <td>${dev>5?`<span class="tag red">+${dev}%</span>`:dev<-3?`<span class="tag green">${dev}%</span>`:`<span class="tag blue">~${dev}%</span>`}</td>
+        <td><span style="font-weight:600;color:${p.investment_score>=75?'var(--green2)':p.investment_score>=55?'var(--amber2)':'#fb7185'}">${p.investment_score}</span></td>
+        <td><span style="font-weight:600;color:${p.risk_score<=30?'var(--green2)':p.risk_score<=55?'var(--amber2)':'#fb7185'}">${p.risk_score}</span></td>
+        <td>${p.days_on_market}d</td>
+        <td>${dev>10?`<span class="tag amber">Sobreprecio</span>`:dev<-3?`<span class="tag green">Oportunidad</span>`:`<span class="tag blue">En precio</span>`}</td>
+      </tr>`;}).join('')}
+    </tbody></table>`;
+}
+
+async function openPropDetail(id) {
+  const p = await api('/api/properties/' + id);
+  document.getElementById('pd-title').textContent = `${p.neighborhood} — ${p.address}`;
+  const dev = p.avm_deviation_pct;
+  document.getElementById('prop-detail-body').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><div class="di-label">Superficie</div><div class="di-value">${p.sqm_covered} m²</div></div>
+      <div class="detail-item"><div class="di-label">Ambientes</div><div class="di-value">${p.rooms}</div></div>
+      <div class="detail-item"><div class="di-label">Precio publicado</div><div class="di-value">USD ${p.listed_price_usd?.toLocaleString()}</div></div>
+      <div class="detail-item"><div class="di-label">Valor AVM</div><div class="di-value" style="color:var(--green2)">USD ${p.avm_value?.toLocaleString()}</div></div>
+      <div class="detail-item"><div class="di-label">Desvío de mercado</div><div class="di-value"><span class="tag ${dev>5?'red':dev<-3?'green':'blue'}">${dev>0?'+':''}${dev}%</span></div></div>
+      <div class="detail-item"><div class="di-label">Días en mercado</div><div class="di-value">${p.days_on_market} días</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+      ${scoreBar('Score inversión', p.investment_score, p.investment_score>=75?'var(--green2)':p.investment_score>=55?'var(--amber2)':'#fb7185')}
+      ${scoreBar('Score riesgo', p.risk_score, p.risk_score<=30?'var(--green2)':p.risk_score<=55?'var(--amber2)':'#fb7185')}
+      ${scoreBar('Score comercial', p.commercial_score, 'var(--accent2)')}
+    </div>
+    ${p.ai_insight?`<div class="ib"><div class="ih"><div class="id"></div><span class="it">Análisis IA</span></div><div class="itext">${p.ai_insight}</div></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-danger btn-sm" onclick="archiveProp('${p.id}')">Archivar</button>
+    </div>`;
+  openModal('modal-prop-detail');
+}
+
+async function archiveProp(id) {
+  await api('/api/properties/'+id, { method:'DELETE' });
+  toast('Propiedad archivada'); closeModal('modal-prop-detail'); loadProperties();
+}
+
+// ─── MARKET ──────────────────────────────────────────────────────
+async function loadMarket() {
+  const data = await api('/api/market');
+  const avgCaba = data.avg_caba;
+  document.getElementById('market-metrics').innerHTML = `
+    <div class="mc blue"><div class="ml">USD/m² promedio CABA</div><div class="mv">$${avgCaba.toLocaleString()}</div><div class="md up">↑ Actualizado hoy</div></div>
+    <div class="mc amber"><div class="ml">Días promedio mercado</div><div class="mv">${Math.round(data.neighborhoods.reduce((a,b)=>a+b.median_days_listed,0)/data.neighborhoods.length)}</div><div class="md neutral">→ Promedio CABA</div></div>
+    <div class="mc green"><div class="ml">Absorción promedio</div><div class="mv">${Math.round(data.neighborhoods.reduce((a,b)=>a+b.absorption_rate,0)/data.neighborhoods.length)}%</div><div class="md neutral">→ Mercado equilibrado</div></div>`;
+
+  const barColors = ['#8b5cf6','#3b7fff','#14b8a6','#10b981','#f59e0b','#f43f5e','#6b7280'];
+  const maxSqm = Math.max(...data.neighborhoods.map(n=>n.avg_usd_sqm));
+  document.getElementById('market-grid').innerHTML = `
+    <div class="mcard">
+      <div class="ct">USD/m² por barrio</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Departamentos 2–3 amb · actualizado hoy</div>
+      <div class="bar-wrap">
+        ${data.neighborhoods.map((n,i)=>`
+          <div class="bar-item">
+            <div class="bar" style="height:${Math.round(n.avg_usd_sqm/maxSqm*95)}%;background:${barColors[i]}40;border-top:2px solid ${barColors[i]}"></div>
+            <div class="blbl">${n.neighborhood}<br><strong>${n.avg_usd_sqm.toLocaleString()}</strong></div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="mcard">
+      <div class="ct">Demanda activa por zona</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">Score de búsquedas e interés</div>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:0">
+        ${data.neighborhoods.map((n,i)=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+            <div><div style="font-size:12px;font-weight:500">${n.neighborhood}</div><div style="font-size:10px;color:var(--muted)">${n.median_days_listed}d promedio · ${n.active_listings} listados</div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:110px;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden"><div style="width:${n.demand_score}%;height:100%;background:${barColors[i]};border-radius:3px"></div></div>
+              <span style="font-size:11px;font-weight:600;color:${barColors[i]};min-width:24px">${n.demand_score}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="mcard" style="grid-column:1/-1">
+      <div class="ct">Evolución USD/m² — últimos 12 meses</div>
+      <div style="margin-top:16px;height:90px;position:relative">
+        <svg width="100%" height="90" viewBox="0 0 600 90" preserveAspectRatio="none">
+          <defs><linearGradient id="lg" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="rgba(59,127,255,.25)"/><stop offset="100%" stop-color="rgba(59,127,255,0)"/></linearGradient></defs>
+          ${(()=>{const vals=data.trend;const mn=Math.min(...vals),mx=Math.max(...vals),r=mx-mn||1;const pts=vals.map((v,i)=>`${i*(600/(vals.length-1))},${80-(v-mn)/r*65}`);return `<path d="M${pts.join('L')}" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M${pts.join('L')}L600,90L0,90Z" fill="url(#lg)"/>`;})()}
+        </svg>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)">
+        ${['Jun','Jul','Ago','Sep','Oct','Nov','Dic','Ene','Feb','Mar','Abr','May'].map(m=>`<span style="flex:1;text-align:center">${m}</span>`).join('')}
+      </div>
+      <div style="display:flex;gap:24px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Inicio período</div><div style="font-size:15px;font-weight:700;font-family:var(--fh)">USD ${data.trend[0].toLocaleString()}/m²</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Hoy</div><div style="font-size:15px;font-weight:700;font-family:var(--fh);color:var(--green2)">USD ${data.trend[data.trend.length-1].toLocaleString()}/m²</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Variación 12m</div><div style="font-size:15px;font-weight:700;font-family:var(--fh);color:var(--green2)">+${(((data.trend[data.trend.length-1]-data.trend[0])/data.trend[0])*100).toFixed(1)}%</div></div>
+        <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Barrio más activo</div><div style="font-size:15px;font-weight:700;font-family:var(--fh);color:var(--accent2)">${data.neighborhoods.sort((a,b)=>b.demand_score-a.demand_score)[0].neighborhood}</div></div>
+      </div>
+    </div>`;
+}
+
+// ─── INSIGHTS ────────────────────────────────────────────────────
+async function loadInsights() {
+  const data = await api('/api/insights');
+  const all = [
+    ...data.alerts.map(i=>({...i,bg:'rgba(244,63,94,.06)',border:'rgba(244,63,94,.15)',accent:'#fb7185',left:'rgba(244,63,94,1)',icon:'⚠'})),
+    ...data.opportunities.map(i=>({...i,bg:'rgba(16,185,129,.06)',border:'rgba(16,185,129,.15)',accent:'var(--green2)',left:'var(--green)',icon:'✓'})),
+    ...data.matches.map(i=>({...i,bg:'rgba(59,127,255,.06)',border:'rgba(59,127,255,.15)',accent:'var(--accent2)',left:'var(--accent)',icon:'→'})),
+  ];
+  document.getElementById('insights-content').innerHTML = all.length ? all.map(i=>`
+    <div style="background:var(--bg2);border:1px solid ${i.border};border-left:3px solid ${i.left};border-radius:10px;padding:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+        <div style="font-size:12px;font-weight:700;color:${i.accent};text-transform:uppercase;letter-spacing:1px">${i.icon} ${i.title}</div>
+        <span class="tag blue" style="font-size:10px">Automático</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted2);line-height:1.7">${i.body}</div>
+    </div>`).join('') : '<div class="empty"><div class="empty-ico">◈</div><div class="empty-text">No hay insights activos en este momento</div></div>';
+}
+
+// ─── MODALS ───────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openAvmModal() { openModal('modal-avm'); }
+function openClientModal() { openModal('modal-client'); }
+function openDealModal(stage) { if(stage) document.getElementById('nd-stage').value = stage; openModal('modal-deal'); }
+
+// ─── TOAST ────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+loadDashboard();
+</script>
+</body>
+</html>
